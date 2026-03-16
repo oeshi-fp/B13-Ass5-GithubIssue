@@ -171,6 +171,10 @@ margin-bottom:20px;
 font-size:22px;
 font-weight:600;
 }
+.issue-card h4{
+margin:10px 0;
+font-size:16px;
+}
 
 .issue-sub{
 color:#6c757d;
@@ -191,19 +195,19 @@ margin-left:10px;
 }
 /* GRID */
 
-.issues-grid{
+.issue-grid{
 display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:20px;
 }
 
 @media(max-width:1000px){
-.issues-grid{
+.issue-grid{
 grid-template-columns:repeat(2,1fr);
 }
 }
 @media(max-width:600px){
-.issues-grid{
+.issue-grid{
 grid-template-columns:1fr;
 }
 }
