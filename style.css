@@ -10,6 +10,12 @@ margin:0;
 margin-top:20px;
 text-align:left;
 }
+.login-body{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
 
 .form-group{
 margin-bottom:18px;
@@ -120,9 +126,47 @@ font-size:14px;
 .container{
 background:#f6f8fa;
 font-family:sans-serif;
+width:90%;
+max-width:1200px;
+margin:auto;
+padding:30px 0;
 
 }
 
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px 40px;
+background:white;
+border-bottom:1px solid #ddd;
+}
+
+.search-box{
+display:flex;
+gap:10px;
+}
+
+.search-box input{
+padding:8px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+.search-box button{
+padding:8px 14px;
+background:black;
+color:white;
+border:none;
+border-radius:5px;
+}
+
+.issues-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
 .issue-title{
 font-size:22px;
 font-weight:600;
@@ -131,6 +175,17 @@ font-weight:600;
 .issue-sub{
 color:#6c757d;
 font-size:14px;
+}
+
+.status-legend span{
+margin-left:10px;
+}
+/* GRID */
+
+.issues-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+gap:20px;
 }
 
 /* Tabs */
