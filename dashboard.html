@@ -15,7 +15,7 @@
 
 <h5>All Issues</h5>
 
-<div class="Search-box">
+<div class="search-box">
 
 <input id="searchInput"  placeholder="Search issues">  
 
@@ -162,11 +162,11 @@ let priorityClass = issue.priority ? issue.priority.toLowerCase() : "low"
 
 container.innerHTML += `
 
-<div class="col-md-6 col-lg-4">
+<div>
 
 <div class="issue-card ${border}" onclick="openIssue(${issue.id})" style="cursor:pointer">
 
-<div class="d-flex justify-content-between mb-2">
+<div class="card-header">
 
 <span class="priority ${priorityClass}">
 ${issue.priority || "LOW"}
@@ -387,35 +387,5 @@ document.getElementById("issueModal").style.display="none"
 }
 </script>
 
-<!-- ISSUE MODAL -->
-
-<div class="modal fade" id="issueModal" tabindex="-1">
-
-<div class="modal-dialog modal-lg">
-
-<div class="modal-content">
-
-<div class="modal-header">
-
-<h5 class="modal-title" id="modalTitle">Issue Details</h5>
-
-<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-
-</div>
-
-<div class="modal-body" id="modalBody">
-
-Loading...
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
