@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Issues Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar navbar-light bg-light px-4">
+
+<h5 class="m-0">All Issues</h5>
+
+<div class="d-flex">
+
+<input id="searchInput" class="form-control me-2" placeholder="Search issues">  
+
+<button class="btn btn-dark">Search</button>
+
+</div>
+
+</nav>
+
+
+<div class="container mt-4">
+
+<!-- TABS -->
+
+<div class="tabs mb-3">
+
+<button id="allBtn" class="tab-btn active" onclick="filterIssues('all')">ALL</button>
+
+<button id="openBtn" class="tab-btn" onclick="filterIssues('open')">Open</button>
+
+<button id="closedBtn" class="tab-btn" onclick="filterIssues('closed')">Closed</button>
+
+</div>
+
+
+<!-- ISSUE HEADER -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<div>
+
+<div class="issue-title">
+<img src="assets/Aperture.png" alt="aperture logo" class="logo me-2">
+<span id="count">0</span> Issues
+</div>
+
+<div class="issue-sub">
+Track and manage your project issues
+</div>
+
+</div>
+
+<div>
+
+<span class="me-3">🟢 Open</span>
+<span>🟣 Closed</span>
+
+</div>
+
+</div>
+
+
+<!-- ISSUES GRID -->
+
+<div class="row g-4" id="issuesContainer"></div>
+
+</div>
+
+<!-- ISSUE MODAL -->
+
+<div id="issueModal" class="modal">
+
+<div class="modal-box">
+
+<button class="close-btn" onclick="closeModal()">Close</button>
+
+<h2 id="modalTitle"></h2>
+
+<div class="modal-meta">
+
+<span id="modalStatus" class="status-badge"></span>
+
+<span id="modalId"></span>
+
+</div>
+
+<div class="labels" id="modalLabels"></div>
+
+<p class="modal-desc" id="modalDescription"></p>
+
+<div class="modal-info">
+
+<div>
+<p class="info-title">Author</p>
+<p id="modalAuthor"></p>
+</div>
+
+<div>
+<p class="info-title">Created</p>
+<p id="modalDate"></p>
+</div>
+
+<div>
+<p class="info-title">Priority</p>
+<span id="modalPriority" class="priority-badge"></span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let allIssues = []
+
+async function loadIssues(){
+
+try{
+
+const res = await fetch("https://phi-lab-server.vercel.app/api/v1/lab/issues")
+
+const data = await res.json()
+
+allIssues = data.data
+
+displayIssues(allIssues)
+
+}
+
+catch(error){
+
+console.log("API Error:",error)
+
+}
+
+}
+
+
+function displayIssues(issues){
+
+const container = document.getElementById("issuesContainer")
+
+container.innerHTML = ""
+
+document.getElementById("count").innerText = issues.length
+
+issues.forEach(issue=>{
+
+let border = issue.status === "open" ? "open" : "closed"
+
+let priorityClass = issue.priority ? issue.priority.toLowerCase() : "low"
+
+container.innerHTML += `
+
+<div class="col-md-6 col-lg-4">
+
+<div class="issue-card ${border}" onclick="openIssue(${issue.id})" style="cursor:pointer">
+
+<div class="d-flex justify-content-between mb-2">
+
+<span class="priority ${priorityClass}">
+${issue.priority || "LOW"}
+</span>
+
+</div>
+
+<h6 class="fw-bold">${issue.title}</h6>
+
+<p class="text-muted small">
+${issue.description || ""}
+</p>
+
+<div class="mb-2">
+
+<span class="label bug">BUG</span>
+<span class="label help">HELP WANTED</span>
+
+</div>
+
+<div class="meta">
+
+#${issue.id} by john_doe <br>
+1/15/2024
+
+</div>
+
+</div>
+
+</div>
+
+`
+
+})
+
+}
+
+
+
+function filterIssues(type){
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+btn.classList.remove("active")
+})
+
+if(type==="all"){
+
+document.getElementById("allBtn").classList.add("active")
+
+displayIssues(allIssues)
+
+}
+
+if(type==="open"){
+
+document.getElementById("openBtn").classList.add("active")
+
+let filtered = allIssues.filter(issue=>issue.status==="open")
+
+displayIssues(filtered)
+
+}
+
+if(type==="closed"){
+
+document.getElementById("closedBtn").classList.add("active")
+
+let filtered = allIssues.filter(issue=>issue.status==="closed")
+
+displayIssues(filtered)
+
+}
+
+}
+
+
+
+/* SEARCH */
+
+document.getElementById("searchInput").addEventListener("keyup",function(){
+
+let value = this.value.toLowerCase()
+
+let filtered = allIssues.filter(issue =>
+
+issue.title.toLowerCase().includes(value)
+
+)
+
+displayIssues(filtered)
+
+})
+
+
+loadIssues()
+
+async function openIssue(id){
+
+try{
+
+const res = await fetch(`https://phi-lab-server.vercel.app/api/v1/lab/issue/${id}`)
+
+const data = await res.json()
+
+const issue = data.data
+
+
+/* TITLE */
+
+document.getElementById("modalTitle").innerText = issue.title
+
+
+/* STATUS */
+
+let status = issue.status || "open"
+
+document.getElementById("modalStatus").innerText = status.toUpperCase()
+
+document.getElementById("modalStatus").style.background =
+status === "open" ? "#22c55e" : "#8b5cf6"
+
+
+/* ISSUE ID */
+
+document.getElementById("modalId").innerText = "#" + issue.id
+
+
+/* DESCRIPTION */
+
+document.getElementById("modalDescription").innerText =
+issue.description || "No description"
+
+
+/* AUTHOR */
+
+document.getElementById("modalAuthor").innerText =
+issue.author || "john_doe"
+
+
+/* DATE */
+
+document.getElementById("modalDate").innerText =
+issue.createdAt || "1/15/2024"
+
+
+/* PRIORITY */
+
+let priority = issue.priority || "LOW"
+
+document.getElementById("modalPriority").innerText = priority
+
+if(priority.toLowerCase() === "high"){
+
+document.getElementById("modalPriority").style.background="#ef4444"
+
+}
+
+else if(priority.toLowerCase() === "medium"){
+
+document.getElementById("modalPriority").style.background="#f59e0b"
+
+}
+
+else{
+
+document.getElementById("modalPriority").style.background="#6b7280"
+
+}
+
+
+/* LABELS */
+
+const labelsContainer = document.getElementById("modalLabels")
+
+labelsContainer.innerHTML = ""
+
+if(issue.labels){
+
+issue.labels.forEach(label=>{
+
+let className=""
+
+if(label.toLowerCase()=="bug") className="bug"
+
+if(label.toLowerCase()=="help wanted") className="help"
+
+if(label.toLowerCase()=="enhancement") className="enhancement"
+
+labelsContainer.innerHTML +=
+`<span class="label-badge ${className}">${label}</span>`
+
+})
+
+}
+
+
+/* SHOW MODAL */
+
+document.getElementById("issueModal").style.display="flex"
+
+}
+
+catch(error){
+
+console.log("Issue fetch error:",error)
+
+}
+
+}
+
+
+/* CLOSE MODAL */
+
+function closeModal(){
+
+document.getElementById("issueModal").style.display="none"
+
+}
+</script>
+
+<!-- ISSUE MODAL -->
+
+<div class="modal fade" id="issueModal" tabindex="-1">
+
+<div class="modal-dialog modal-lg">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h5 class="modal-title" id="modalTitle">Issue Details</h5>
+
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+</div>
+
+<div class="modal-body" id="modalBody">
+
+Loading...
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
